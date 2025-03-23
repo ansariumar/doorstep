@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .auth-container {
+            max-width: 500px;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .auth-title {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 25px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: #777;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background: transparent;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .form-control {
+            height: 48px;
+            border-radius: 8px;
+            border: 1px solid #e1e5eb;
+            padding: 10px 15px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.1);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .form-text {
+            color: #6c757d;
+        }
+        
+        .invalid-feedback {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .toggle-forms {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .toggle-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+        
+        .spinner-border {
+            height: 20px;
+            width: 20px;
+            margin-right: 8px;
+            display: none;
+        }
+        
+        .alert {
+            display: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .company-logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .company-logo svg {
+            height: 50px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <div class="company-logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            
+            <div class="alert alert-success" id="successAlert" role="alert">
+                Registration successful! You can now log in.
+            </div>
+            
+            <div class="alert alert-danger" id="errorAlert" role="alert">
+                An error occurred. Please try again.
+            </div>
+            
+            <ul class="nav nav-tabs nav-fill" id="authTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab" aria-controls="login" aria-selected="true">Login</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="register-user-tab" data-bs-toggle="tab" data-bs-target="#register-user" type="button" role="tab" aria-controls="register-user" aria-selected="false">Register User</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="register-worker-tab" data-bs-toggle="tab" data-bs-target="#register-worker" type="button" role="tab" aria-controls="register-worker" aria-selected="false">Register Worker</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="authTabsContent">
+                <!-- Login Form -->
+                <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+                    <h3 class="auth-title">Welcome Back</h3>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" placeholder="Enter your email" required>
+                            <div class="invalid-feedback">Please enter a valid email.</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                            <div class="invalid-feedback">Password is required.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <span class="spinner-border spinner-border-sm" id="loginSpinner"></span>
+                            Login
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Register User Form -->
+                <div class="tab-pane fade" id="register-user" role="tabpanel" aria-labelledby="register-user-tab">
+                    <h3 class="auth-title">Create User Account</h3>
+                    <form id="registerUserForm">
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="userName" placeholder="Enter your full name" required>
+                            <div class="invalid-feedback">Name is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="userEmail" placeholder="Enter your email" required>
+                            <div class="invalid-feedback">Please enter a valid email.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="userPassword" placeholder="Create a password" required>
+                            <div class="invalid-feedback">Password must be at least 4 characters.</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="userPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="userPhone" placeholder="Enter your phone number" required>
+                            <div class="invalid-feedback">Please enter a valid phone number.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <span class="spinner-border spinner-border-sm" id="registerUserSpinner"></span>
+                            Register as User
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Register Worker Form -->
+                <div class="tab-pane fade" id="register-worker" role="tabpanel" aria-labelledby="register-worker-tab">
+                    <h3 class="auth-title">Create Worker Account</h3>
+                    <form id="registerWorkerForm">
+                        <div class="mb-3">
+                            <label for="workerName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="workerName" placeholder="Enter your full name" required>
+                            <div class="invalid-feedback">Name is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="workerEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="workerEmail" placeholder="Enter your email" required>
+                            <div class="invalid-feedback">Please enter a valid email.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="workerPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="workerPassword" placeholder="Create a password" required>
+                            <div class="invalid-feedback">Password must be at least 4 characters.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="workerPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="workerPhone" placeholder="Enter your phone number" required>
+                            <div class="invalid-feedback">Please enter a valid phone number.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="workerAddress" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="workerAddress" placeholder="Enter your address" required>
+                            <div class="invalid-feedback">Address is required.</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="workerLocation" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="workerLocation" placeholder="Enter your location" required>
+                            <div class="invalid-feedback">Location is required.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <span class="spinner-border spinner-border-sm" id="registerWorkerSpinner"></span>
+                            Register as Worker
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Form validation and submission
+            
+            // Login Form
+            $("#loginForm").on("submit", function(e) {
+                e.preventDefault();
+                
+                // Reset validation
+                $(this).removeClass('was-validated');
+                
+                // Get form values
+                const email = $("#loginEmail").val().trim();
+                const password = $("#loginPassword").val().trim();
+                
+                // Validate email
+                if (!validateEmail(email)) {
+                    $("#loginEmail").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#loginEmail").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate password
+                if (password.length < 4) {
+                    $("#loginPassword").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#loginPassword").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Show spinner
+                $("#loginSpinner").show();
+                
+                // Prepare data
+                const data = {
+                    email: email,
+                    password: password
+                };
+                
+                // Submit form using AJAX
+                $.ajax({
+                    url: "http://localhost:4000/api/auth/login",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        $("#loginSpinner").hide();
+                        $("#successAlert").text("Login successful!").fadeIn();
+                        setTimeout(function() {
+                            $("#successAlert").fadeOut();
+                        }, 3000);
+                        console.log("Login successful:", response);
+                        
+                        // Reset form
+                        $("#loginForm")[0].reset();
+                        $("#loginEmail, #loginPassword").removeClass('is-valid');
+                    },
+                    error: function(xhr, status, error) {
+                        $("#loginSpinner").hide();
+                        $("#errorAlert").text("Login failed: " + (xhr.responseJSON?.message || error)).fadeIn();
+                        setTimeout(function() {
+                            $("#errorAlert").fadeOut();
+                        }, 3000);
+                        console.error("Login error:", xhr.responseJSON || error);
+                    }
+                });
+            });
+            
+            // Register User Form
+            $("#registerUserForm").on("submit", function(e) {
+                e.preventDefault();
+                
+                // Reset validation
+                $(this).removeClass('was-validated');
+                
+                // Get form values
+                const name = $("#userName").val().trim();
+                const email = $("#userEmail").val().trim();
+                const password = $("#userPassword").val().trim();
+                const phone = $("#userPhone").val().trim();
+                
+                // Validate name
+                if (name.length < 2) {
+                    $("#userName").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#userName").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate email
+                if (!validateEmail(email)) {
+                    $("#userEmail").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#userEmail").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate password
+                if (password.length < 4) {
+                    $("#userPassword").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#userPassword").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate phone
+                if (!validatePhone(phone)) {
+                    $("#userPhone").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#userPhone").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Show spinner
+                $("#registerUserSpinner").show();
+                
+                // Prepare data
+                const data = {
+                    name: name,
+                    email: email,
+                    password: password,
+                    phone: phone
+                };
+                
+                // Submit form using AJAX
+                $.ajax({
+                    url: "http://localhost:4000/api/auth/registerUser",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        $("#registerUserSpinner").hide();
+                        $("#successAlert").text("User registration successful!").fadeIn();
+                        setTimeout(function() {
+                            $("#successAlert").fadeOut();
+                            // Switch to login tab
+                            $("#login-tab").tab('show');
+                        }, 3000);
+                        console.log("Registration successful:", response);
+                        
+                        // Reset form
+                        $("#registerUserForm")[0].reset();
+                        $("#userName, #userEmail, #userPassword, #userPhone").removeClass('is-valid');
+                    },
+                    error: function(xhr, status, error) {
+                        $("#registerUserSpinner").hide();
+                        $("#errorAlert").text("Registration failed: " + (xhr.responseJSON?.message || error)).fadeIn();
+                        setTimeout(function() {
+                            $("#errorAlert").fadeOut();
+                        }, 3000);
+                        console.error("Registration error:", xhr.responseJSON || error);
+                    }
+                });
+            });
+            
+            // Register Worker Form
+            $("#registerWorkerForm").on("submit", function(e) {
+                e.preventDefault();
+                
+                // Reset validation
+                $(this).removeClass('was-validated');
+                
+                // Get form values
+                const name = $("#workerName").val().trim();
+                const email = $("#workerEmail").val().trim();
+                const password = $("#workerPassword").val().trim();
+                const phone = $("#workerPhone").val().trim();
+                const address = $("#workerAddress").val().trim();
+                const location = $("#workerLocation").val().trim();
+                
+                // Validate name
+                if (name.length < 2) {
+                    $("#workerName").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#workerName").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate email
+                if (!validateEmail(email)) {
+                    $("#workerEmail").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#workerEmail").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate password
+                if (password.length < 4) {
+                    $("#workerPassword").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#workerPassword").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate phone
+                if (!validatePhone(phone)) {
+                    $("#workerPhone").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#workerPhone").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate address
+                if (address.length < 3) {
+                    $("#workerAddress").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#workerAddress").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Validate location
+                if (location.length < 3) {
+                    $("#workerLocation").addClass('is-invalid');
+                    return;
+                } else {
+                    $("#workerLocation").removeClass('is-invalid').addClass('is-valid');
+                }
+                
+                // Show spinner
+                $("#registerWorkerSpinner").show();
+                
+                // Prepare data
+                const data = {
+                    name: name,
+                    email: email,
+                    password: password,
+                    phone: phone,
+                    address: address,
+                    location: location
+                };
+                
+                // Submit form using AJAX
+                $.ajax({
+                    url: "http://localhost:4000/api/auth/registerWorker",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        $("#registerWorkerSpinner").hide();
+                        $("#successAlert").text("Worker registration successful!").fadeIn();
+                        setTimeout(function() {
+                            $("#successAlert").fadeOut();
+                            // Switch to login tab
+                            $("#login-tab").tab('show');
+                        }, 3000);
+                        console.log("Registration successful:", response);
+                        
+                        // Reset form
+                        $("#registerWorkerForm")[0].reset();
+                        $("#workerName, #workerEmail, #workerPassword, #workerPhone, #workerAddress, #workerLocation").removeClass('is-valid');
+                    },
+                    error: function(xhr, status, error) {
+                        $("#registerWorkerSpinner").hide();
+                        $("#errorAlert").text("Registration failed: " + (xhr.responseJSON?.message || error)).fadeIn();
+                        setTimeout(function() {
+                            $("#errorAlert").fadeOut();
+                        }, 3000);
+                        console.error("Registration error:", xhr.responseJSON || error);
+                    }
+                });
+            });
+            
+            // Helper functions for validation
+            function validateEmail(email) {
+                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(email);
+            }
+            
+            function validatePhone(phone) {
+                // Allow for international format with + or just numbers
+                const re = /^(\+\d{1,3})?[-.\s]?\d{5,15}$/;
+                return re.test(phone);
+            }
+            
+            // Live validation feedback
+            $('input').on('input', function() {
+                const $this = $(this);
+                const id = $this.attr('id');
+                const val = $this.val().trim();
+                
+                if (id.includes('Email')) {
+                    if (validateEmail(val)) {
+                        $this.removeClass('is-invalid').addClass('is-valid');
+                    } else if (val.length > 0) {
+                        $this.removeClass('is-valid').addClass('is-invalid');
+                    } else {
+                        $this.removeClass('is-valid is-invalid');
+                    }
+                } else if (id.includes('Password')) {
+                    if (val.length >= 4) {
+                        $this.removeClass('is-invalid').addClass('is-valid');
+                    } else if (val.length > 0) {
+                        $this.removeClass('is-valid').addClass('is-invalid');
+                    } else {
+                        $this.removeClass('is-valid is-invalid');
+                    }
+                } else if (id.includes('Phone')) {
+                    if (validatePhone(val)) {
+                        $this.removeClass('is-invalid').addClass('is-valid');
+                    } else if (val.length > 0) {
+                        $this.removeClass('is-valid').addClass('is-invalid');
+                    } else {
+                        $this.removeClass('is-valid is-invalid');
+                    }
+                } else {
+                    if (val.length >= 2) {
+                        $this.removeClass('is-invalid').addClass('is-valid');
+                    } else if (val.length > 0) {
+                        $this.removeClass('is-valid').addClass('is-invalid');
+                    } else {
+                        $this.removeClass('is-valid is-invalid');
+                    }
+                }
+            });
+            
+            // Clear validation when changing tabs
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function() {
+                $('.form-control').removeClass('is-valid is-invalid');
+                $('.alert').hide();
+                $('form').trigger('reset');
+            });
+        });
+    </script>
+</body>
+</html>
