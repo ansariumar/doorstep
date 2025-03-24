@@ -90,4 +90,57 @@ exports.deleteBooking = async (req, res) => {
     }
 }
 
+exports.acceptBooking = async (req, res) => {
+    const bookingId = req.params.id;
+    const workerId = req.worker._id;
+    // console.log(workerId)
 
+    try {
+        const user = await User.findOne({ "bookings._id": bookingId });
+        const booking = user.bookings.find(booking => booking.id === bookingId);
+
+        if (!booking) return res.status(404).json({ success: false, message: "Booking not found" })
+        
+        if (booking.workerId.toString() !== workerId.toString()) return res.status(403).json({ success: false, message: "you can't accept this booking" })
+        
+        booking.status = "Confirmed";
+        booking.acceptedAt = new Date();
+        await user.save();
+
+        res.json({success: true, message: "Booking accepted successfully", booking})
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+    }
+    
+}
+
+exports.completeBooking = async (req, res) => {
+    const bookingId = req.params.id;
+    const workerId = req.worker._id;
+    // console.log(workerId)
+
+    try {
+        const user = await User.findOne({ "bookings._id": bookingId });
+        const booking = user.bookings.find(booking => booking.id === bookingId);
+
+        if (!booking) return res.status(404).json({ success: false, message: "Booking not found" })
+        
+        if (booking.workerId.toString() !== workerId.toString()) return res.status(403).json({ success: false, message: "you can't accept this booking" })
+        
+        if (booking.status !== "Confirmed") return res.status(403).json({ success: false, message: "Booking is not confirmed" })
+        booking.status = "Completed";
+        booking.completedAt = new Date();
+        await user.save();
+
+        const worker = await Worker.findById(workerId);
+        worker.completedBookings += 1;
+        await worker.save();
+
+        res.json({success: true, message: "Booking completed successfully", booking})
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+    }
+    
+}

@@ -151,3 +151,25 @@ exports.getService = async (req, res) => {
     }
 }
 
+exports.searchServiceByName = async (req, res) => {
+    try {
+        const { query } = req.query; // Get search query from request
+
+        if (!query) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+
+        // Use case-insensitive regex to match the service name
+        const services = await Service.find({ 
+            serviceName: { $regex: query, $options: "i" } 
+        });
+
+        if (services.length === 0) {
+            return res.status(404).json({ message: "No services found" });
+        }
+
+        res.status(200).json({ services });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error });
+    }
+};

@@ -14,5 +14,6 @@ router.get('/all', controller.getService);
 
 router.delete('/delete/:id', authorize('worker', 'admin'), controller.deleteService);
 
+router.get('/search', controller.searchServiceByName);
 
 module.exports = router;

@@ -5,19 +5,30 @@ const Worker = require('../models/Worker');
 exports.updateProfile = async (req, res) => {
     try {   
         const userID = req.user.id;
+        const workerID = req.worker._id;
         const { name, location, address, phone, availability } = req.body;
 
-        if (!name || !location || !address || !phone) return res.status(400).json({ success: false, message: 'Please fill in all fields' });
+        // if (!name || !location || !address || !phone) return res.status(400).json({ success: false, message: 'Please fill in all fields' });
 
-        const worker = await Worker.create({
-            name,
-            userID: userID,
-            location,
-            address,
-            phone,
-            availability
-        })
 
+        // const worker = await Worker.create({
+        //     name,
+        //     userID: userID,
+        //     location,
+        //     address,
+        //     phone,
+        //     availability
+        // })
+
+        const worker  =  await Worker.findById(workerID)
+        worker.name = name ?? worker.name;
+        worker.location = location ?? worker.location;
+        worker.address = address ?? worker.address;
+        worker.phone = phone ?? worker.phone;
+        worker.availability = availability ?? worker.availability;
+
+        await worker.save();
+        
         res.status(201).json({ success: true, message: 'Profile updated', worker });
     } catch (err) {
         console.error(err);

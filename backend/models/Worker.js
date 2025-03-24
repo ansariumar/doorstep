@@ -29,6 +29,10 @@ const WorkerSchema = new mongoose.Schema({
         min: 0,
         max: 5
     },
+    completedBookings: {
+        type: Number,
+        default: 0
+    },
     address: {
         type: String,
         required: true
