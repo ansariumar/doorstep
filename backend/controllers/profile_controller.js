@@ -1,6 +1,6 @@
 const Service = require('../models/Service');
 const Worker = require('../models/Worker');
-
+const User = require('../models/User');
 
 exports.updateProfile = async (req, res) => {
     try {   
@@ -48,3 +48,17 @@ exports.getProfile = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 }
+
+exports.getUserProfile = async (req, res) => {
+    try {
+        const userID = req.user.id;
+
+        const user = await User.findOne({userID: userID}).populate('bookings.serviceId')
+
+        res.status(200).json({ success: true, user })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+}
+

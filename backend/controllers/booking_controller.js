@@ -144,3 +144,11 @@ exports.completeBooking = async (req, res) => {
     }
     
 }
+
+exports.test = async (req, res) => {
+    const userID = req.user.id;
+    console.log(userID)
+    const user = await User.findOne({userID: userID}).populate('bookings.serviceId bookings.workerId')
+      
+    res.json({success: true, message: "Worker found", user})
+}

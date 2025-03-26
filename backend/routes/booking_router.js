@@ -15,4 +15,6 @@ router.post('/accept/:id', authorize('worker'), bookingController.acceptBooking)
 
 router.post('/complete/:id', authorize('worker'), bookingController.completeBooking);
 
+router.get('/test', authorize('worker', 'user'), bookingController.test);
+
 module.exports = router;

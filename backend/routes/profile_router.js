@@ -4,7 +4,8 @@ const authorize = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/my', authorize('user', 'worker', 'contractor', 'admin') ,controller.getProfile);
+router.get('/my', authorize('worker') ,controller.getProfile);
+router.get('/my-user', authorize('user') ,controller.getUserProfile);
 
 router.post('/update',  authorize('user', 'worker', 'contractor', 'admin') , controller.updateProfile);
 
