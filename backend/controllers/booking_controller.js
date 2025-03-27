@@ -4,12 +4,13 @@ const Service = require('../models/Service');
 
 exports.bookService = async (req, res) => {
     try {
-
         const serviceId = req.params.id;
         const userId = req.userClient._id;
+        const { date, time } = req.body;
+        console.log(date, time)
         const worker = await Worker.findOne({ services: serviceId });
 
-        if (!userId || !serviceId || !worker) {
+        if (!userId || !serviceId || !worker || !date || !time) {
             return res.status(400).json({ success: false, message: "All fields are required." });
         }
 
@@ -25,10 +26,13 @@ exports.bookService = async (req, res) => {
         user.bookings.push({
             serviceId,
             workerId: worker._id,
+            date: new Date(date),
+            time,
             status: "Pending"
         });
 
-        await user.save();
+        const savedUser = await user.save();
+        console.log(savedUser)
         res.status(201).json({ success: true, message: "Service booked successfully", booking: user.bookings[user.bookings.length - 1] });
 
     } catch (error) {

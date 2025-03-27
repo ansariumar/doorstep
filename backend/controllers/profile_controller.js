@@ -36,7 +36,7 @@ exports.updateProfile = async (req, res) => {
     }
 }
 
-exports.getProfile = async (req, res) => {
+exports.getWorkerProfile = async (req, res) => {
     try {
         const userID = req.user.id;
         const worker = await Worker.findOne({ userID }).populate('services');

@@ -36,7 +36,7 @@ function Login() {
         // Store the token in localStorage
         localStorage.setItem('token', data.token);
         // Navigate to dashboard on successful login
-        navigate('/dashboard');
+        navigate('/services');
       } else {
         const data = await response.json();
         setError(data.message || 'Login failed');

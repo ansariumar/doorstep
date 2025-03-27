@@ -21,7 +21,6 @@ const UserSchema = new mongoose.Schema({
         zipCode: { type: String }
     },
     bookings: [{
-
         serviceId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Service',
@@ -36,6 +35,10 @@ const UserSchema = new mongoose.Schema({
             type: Date,
             required: true,
             default: Date.now
+        },
+        time: {
+            type: String,
+            required: true
         },
         status: {
             type: String,
